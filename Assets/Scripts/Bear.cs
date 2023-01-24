@@ -37,7 +37,7 @@ public class Bear : MonoBehaviour
             return Vector3.zero;
         }
     }
-
+    // Eðer ýþýn navmesh üzerine denk gelmez ise ýþýnýn döndürdüðü noktaya bakarak navmesh üzerinde en yakýn  noktayý geri döndürür
     private Vector3 GetNearPoint(Vector3 point)
     {
         NavMeshHit myNavHit;
@@ -53,12 +53,14 @@ public class Bear : MonoBehaviour
 
 
     }
+    // Belirlediðimiz çapýn içerisindeki colliderlarý sana döndürür
     public void Check(Vector3 center, float radius)
     {
         Collider[] hitColliders = Physics.OverlapSphere(center, radius, LayerMask.GetMask("Animals"));
 
         foreach (var item in hitColliders)
         {
+            // colliderýn tagýný kontrol ediyoruz
             if (item.gameObject.tag == "Wolf")
             {
                 Target = item.gameObject.transform;
@@ -68,7 +70,7 @@ public class Bear : MonoBehaviour
             }
         }
     }
-
+    // animasyonu ayarlýyoruz
     public void setAnim(string anim)
     {
         for (int i = 0; i < Anims.Length; i++)
@@ -83,7 +85,6 @@ public class Bear : MonoBehaviour
             }
         }
     }
-
 
     void Start()
     {
