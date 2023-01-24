@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Bear : MonoBehaviour
+public class Bear : Animal
 {
     private string[] Anims = new string[]
     {
@@ -14,13 +14,10 @@ public class Bear : MonoBehaviour
         "isDie"
     };
 
-    public NavMeshAgent agent;
-
     [SerializeField]
     private Animator animator;
     private RaycastHit hit;
 
-    public Transform Target;
     public Vector3 GetPoint()
     {
         Vector3 x = transform.forward * Random.Range(5, 20);
@@ -37,6 +34,92 @@ public class Bear : MonoBehaviour
             return Vector3.zero;
         }
     }
+    private bool OneTimeSetTargetRotation;
+    private bool IsRotate;
+    private Quaternion target;
+
+    // Belirlediðimiz çapýn içerisindeki colliderlarý sana döndürür
+    public void Check(Vector3 center, float radius)
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(center, radius, LayerMask.GetMask("Animals"));
+
+        foreach (var item in hitColliders)
+        {
+            // colliderýn tagýný kontrol ediyoruz
+            if (item.gameObject.tag == "Wolf")
+            {
+                LockTarget = item.gameObject.transform;
+
+                Vector3 dir = (transform.position - LockTarget.transform.position);
+                float angle = Vector3.Dot(transform.forward, dir);
+
+                if (angle > 0)
+                {
+
+                }
+
+                // Debug.Log("Ayý " + angle);
+                //   Debug.Log("Ayý -- Kükre");
+
+                //setAnim("isRoar");
+            }
+        }
+
+        Debug.Log(IsTriggered);
+
+        if (IsTriggered)
+        {
+            if (!OneTimeSetTargetRotation)
+            {
+                agent.isStopped = true;
+                target = Quaternion.LookRotation((CurrentTarget.position - transform.position), Vector3.up);
+                target = Quaternion.Euler(0, target.eulerAngles.y, 0);
+
+                IsRotate = true;
+                OneTimeSetTargetRotation = true;
+            }
+
+            if (IsRotate)
+            {
+                Debug.Log("Eþitleniyor rotasyon");
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, target, 100 * Time.deltaTime);
+            }
+
+            if (CheckRotation(target) && IsRotate)
+            {
+                Debug.Log("Kükre");
+                IsRotate = false;
+                setAnim("isRoar");
+            }
+            else
+            {
+                Debug.Log("eþitlenmedi");
+            }
+        }
+    }
+
+    public void SetRotate()
+    {
+        target = Quaternion.LookRotation((CurrentTarget.position - transform.position), Vector3.up);
+        transform.rotation = target;
+    }
+
+    public void RoarFinished()
+    {
+        if (CurrentTarget != null)
+        {
+            Animal animal = CurrentTarget.gameObject.GetComponent<Animal>();
+            animal.LockTarget = transform;
+            animal.CurrentTarget = transform;
+            animal.IsTriggered = true;
+        }
+    }
+
+    public bool CheckRotation(Quaternion target)
+    {
+        return Mathf.Approximately(Mathf.Abs(Quaternion.Dot(transform.rotation, target)), 1f);
+    }
+
     // Eðer ýþýn navmesh üzerine denk gelmez ise ýþýnýn döndürdüðü noktaya bakarak navmesh üzerinde en yakýn  noktayý geri döndürür
     private Vector3 GetNearPoint(Vector3 point)
     {
@@ -50,26 +133,28 @@ public class Bear : MonoBehaviour
             Debug.LogError("Point ayarlanmadý!");
             return Vector3.zero;
         }
-
-
     }
-    // Belirlediðimiz çapýn içerisindeki colliderlarý sana döndürür
-    public void Check(Vector3 center, float radius)
+
+    public void Hit()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(center, radius, LayerMask.GetMask("Animals"));
+        CurrentTarget.GetComponent<Live>().Health -= 50;
+    }
 
-        foreach (var item in hitColliders)
+    public void CheckTargetDistance()
+    {
+        float distance = (CurrentTarget.transform.position - transform.position).magnitude;
+        if (distance > (agent.stoppingDistance + 2f))
         {
-            // colliderýn tagýný kontrol ediyoruz
-            if (item.gameObject.tag == "Wolf")
-            {
-                Target = item.gameObject.transform;
-
-
-                Debug.LogError("Kükre");
-            }
+            setAnim("isChase");
         }
     }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0, 0, 1, 0.2f);
+        Gizmos.DrawSphere(transform.position, 5);
+    }
+
     // animasyonu ayarlýyoruz
     public void setAnim(string anim)
     {
@@ -89,5 +174,6 @@ public class Bear : MonoBehaviour
     void Start()
     {
         setAnim("isPatroll");
+
     }
 }

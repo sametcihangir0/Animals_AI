@@ -31,6 +31,8 @@ public class WolfPatrollState : StateMachineBehaviour
         {
             point = wolf.GetPoint();
         }
+
+        wolf.Check(wolf.transform.position, 15f);
     }
 
 
