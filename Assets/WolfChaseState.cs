@@ -18,7 +18,7 @@ public class WolfChaseState : StateMachineBehaviour
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        wolf.agent.stoppingDistance = 1.5f;
+        wolf.agent.stoppingDistance = 2.25f;
         wolf.agent.SetDestination(wolf.CurrentTarget.position);
 
         if (wolf.agent.remainingDistance <= wolf.agent.stoppingDistance)

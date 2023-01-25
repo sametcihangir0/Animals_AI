@@ -38,6 +38,11 @@ public class Bear : Animal
     private bool IsRotate;
     private Quaternion target;
 
+    private void Update()
+    {
+        Debug.Log("Ayý navmeshagent = " + agent.isStopped);
+    }
+
     // Belirlediðimiz çapýn içerisindeki colliderlarý sana döndürür
     public void Check(Vector3 center, float radius)
     {
@@ -52,7 +57,6 @@ public class Bear : Animal
 
                 Vector3 dir = (transform.position - LockTarget.transform.position);
                 float angle = Vector3.Dot(transform.forward, dir);
-
                 if (angle > 0)
                 {
 
@@ -65,7 +69,7 @@ public class Bear : Animal
             }
         }
 
-        Debug.Log(IsTriggered);
+        //Debug.Log(IsTriggered);
 
         if (IsTriggered)
         {

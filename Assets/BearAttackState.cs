@@ -12,13 +12,14 @@ public class BearAttackState : StateMachineBehaviour
         {
             bear = animator.GetComponent<Bear>();
         }
+
+        bear.agent.velocity = Vector3.zero;
         bear.agent.isStopped = true;
         bear.SetRotate();
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

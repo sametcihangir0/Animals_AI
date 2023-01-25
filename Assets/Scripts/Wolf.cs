@@ -53,7 +53,10 @@ public class Wolf : Animal
             return Vector3.zero;
         }
     }
-
+    private void Update()
+    {
+        Debug.Log("Kurt navmeshagent = " + agent.isStopped);
+    }
     private bool OneTimeSetTargetRotation;
     private bool IsRotate;
     private Quaternion target;
@@ -74,7 +77,6 @@ public class Wolf : Animal
 
                 if (angle > 0)
                 {
-                    agent.isStopped = true;
                     CurrentTarget = LockTarget;
                     IsTriggered = true;
                 }
@@ -85,7 +87,10 @@ public class Wolf : Animal
         {
             if (!OneTimeSetTargetRotation)
             {
+                agent.isStopped = true;
                 target = Quaternion.LookRotation((CurrentTarget.position - transform.position), Vector3.up);
+                target = Quaternion.Euler(0, target.eulerAngles.y, 0);
+
                 IsRotate = true;
                 OneTimeSetTargetRotation = true;
             }
@@ -106,6 +111,7 @@ public class Wolf : Animal
 
     public void SetRotate()
     {
+        Debug.Log("Rotasyon ayarlanýyor");
         target = Quaternion.LookRotation((CurrentTarget.position - transform.position), Vector3.up);
         transform.rotation = target;
     }

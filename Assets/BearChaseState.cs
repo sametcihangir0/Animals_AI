@@ -18,7 +18,7 @@ public class BearChaseState : StateMachineBehaviour
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        bear.agent.stoppingDistance = 1.5f;
+        bear.agent.stoppingDistance = 2.25f;
         bear.agent.SetDestination(bear.CurrentTarget.position);
 
         if (bear.agent.remainingDistance <= bear.agent.stoppingDistance)

@@ -13,13 +13,13 @@ public class WolfAttackState : StateMachineBehaviour
             wolf = animator.GetComponent<Wolf>();
         }
 
+        wolf.agent.velocity = Vector3.zero;
         wolf.agent.isStopped = true;
         wolf.SetRotate();
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
