@@ -15,6 +15,8 @@ public class WolfRoarState : StateMachineBehaviour
         }
 
         wolf.agent.isStopped = true;
+
+        wolf.Howl();
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

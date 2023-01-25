@@ -5,23 +5,13 @@ using UnityEngine.AI;
 
 public class Bear : Animal
 {
-    private string[] Anims = new string[]
-    {
-        "isPatroll" ,
-        "isAttack" ,
-        "isRoar" ,
-        "isChase" ,
-        "isDie"
-    };
-
-    [SerializeField]
-    private Animator animator;
     private RaycastHit hit;
+    public AudioClip RoarClip;
 
     public Vector3 GetPoint()
     {
-        Vector3 x = transform.forward * Random.Range(5, 20);
-        Vector3 z = transform.right * Random.Range(5, 20);
+        Vector3 x = transform.forward * Random.Range(1f, 8f);
+        Vector3 z = transform.right * Random.Range(1f, 8f);
         Vector3 randomOrigin = (transform.position + (Vector3.up * 5)) + x + z;
 
         if (Physics.Raycast(randomOrigin, Vector3.down, out hit, LayerMask.GetMask("Ground")))
@@ -38,10 +28,6 @@ public class Bear : Animal
     private bool IsRotate;
     private Quaternion target;
 
-    private void Update()
-    {
-        Debug.Log("Ayý navmeshagent = " + agent.isStopped);
-    }
 
     // Belirlediðimiz çapýn içerisindeki colliderlarý sana döndürür
     public void Check(Vector3 center, float radius)
@@ -62,14 +48,9 @@ public class Bear : Animal
 
                 }
 
-                // Debug.Log("Ayý " + angle);
-                //   Debug.Log("Ayý -- Kükre");
-
-                //setAnim("isRoar");
             }
         }
 
-        //Debug.Log(IsTriggered);
 
         if (IsTriggered)
         {
@@ -85,23 +66,20 @@ public class Bear : Animal
 
             if (IsRotate)
             {
-                Debug.Log("Eþitleniyor rotasyon");
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, target, 100 * Time.deltaTime);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, target, 125 * Time.deltaTime);
             }
 
             if (CheckRotation(target) && IsRotate)
             {
-                Debug.Log("Kükre");
-                IsRotate = false;
                 setAnim("isRoar");
-            }
-            else
-            {
-                Debug.Log("eþitlenmedi");
+                IsRotate = false;
             }
         }
     }
-
+    public void Roar()
+    {
+        AudioSource.PlayOneShot(RoarClip);
+    }
     public void SetRotate()
     {
         target = Quaternion.LookRotation((CurrentTarget.position - transform.position), Vector3.up);
@@ -116,6 +94,15 @@ public class Bear : Animal
             animal.LockTarget = transform;
             animal.CurrentTarget = transform;
             animal.IsTriggered = true;
+
+            if (animal.IsDie)
+            {
+                setAnim("isPatroll");
+            }
+            else
+            {
+                setAnim("isChase");
+            }
         }
     }
 
@@ -134,18 +121,19 @@ public class Bear : Animal
         }
         else
         {
-            Debug.LogError("Point ayarlanmadý!");
             return Vector3.zero;
         }
     }
 
     public void Hit()
     {
-        CurrentTarget.GetComponent<Live>().Health -= 50;
+        CurrentTarget.GetComponent<Live>().DecreaseHealth(35, Die);
     }
 
     public void CheckTargetDistance()
     {
+        if (IsDie) return;
+
         float distance = (CurrentTarget.transform.position - transform.position).magnitude;
         if (distance > (agent.stoppingDistance + 2f))
         {
@@ -158,26 +146,14 @@ public class Bear : Animal
         Gizmos.color = new Color(0, 0, 1, 0.2f);
         Gizmos.DrawSphere(transform.position, 5);
     }
-
-    // animasyonu ayarlýyoruz
-    public void setAnim(string anim)
+    // Karþý tarafýn ölüm fonksiyonu
+    public void Die()
     {
-        for (int i = 0; i < Anims.Length; i++)
-        {
-            if (Anims[i] == anim)
-            {
-                animator.SetBool(Anims[i], true);
-            }
-            else
-            {
-                animator.SetBool(Anims[i], false);
-            }
-        }
+        CurrentTarget.GetComponent<Animator>().SetTrigger("Deneme");
+        setAnim("");
     }
-
     void Start()
     {
         setAnim("isPatroll");
-
     }
 }

@@ -20,6 +20,10 @@ public class BearAttackState : StateMachineBehaviour
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        if (bear.CurrentTarget.GetComponent<Live>().IsDie)
+        {
+            bear.setAnim("isRoar");
+        }
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

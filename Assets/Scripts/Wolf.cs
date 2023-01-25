@@ -5,27 +5,14 @@ using UnityEngine.AI;
 
 public class Wolf : Animal
 {
-    // IdleState
-    private string[] Anims = new string[]
-    {
-        "isPatroll" ,
-        "isAttack" ,
-        "isRoar" ,
-        "isChase" ,
-        "isDie"
-    };
-
-
-
-    [SerializeField]
-    private Animator animator;
     private RaycastHit hit;
 
+    public AudioClip HowlClip;
 
     public Vector3 GetPoint()
     {
-        Vector3 x = transform.forward * Random.Range(5, 20);
-        Vector3 z = transform.right * Random.Range(5, 20);
+        Vector3 x = transform.forward * Random.Range(1f, 8f);
+        Vector3 z = transform.right * Random.Range(1f, 8f);
         Vector3 randomOrigin = (transform.position + (Vector3.up * 5)) + x + z;
 
         if (Physics.Raycast(randomOrigin, Vector3.down, out hit, LayerMask.GetMask("Ground")))
@@ -53,10 +40,7 @@ public class Wolf : Animal
             return Vector3.zero;
         }
     }
-    private void Update()
-    {
-        Debug.Log("Kurt navmeshagent = " + agent.isStopped);
-    }
+
     private bool OneTimeSetTargetRotation;
     private bool IsRotate;
     private Quaternion target;
@@ -102,21 +86,22 @@ public class Wolf : Animal
 
             if (CheckRotation(target) && IsRotate)
             {
-                Debug.Log("Kükre");
                 IsRotate = false;
                 setAnim("isRoar");
             }
         }
     }
+    public void Howl()
+    {
+        AudioSource.PlayOneShot(HowlClip);
+    }
 
     public void SetRotate()
     {
-        Debug.Log("Rotasyon ayarlanýyor");
         target = Quaternion.LookRotation((CurrentTarget.position - transform.position), Vector3.up);
         transform.rotation = target;
     }
-
-    public void RoarFinished()
+    public void RoarBegin()
     {
         if (CurrentTarget != null)
         {
@@ -127,17 +112,24 @@ public class Wolf : Animal
         }
     }
 
+    public void RoarFinished()
+    {
+       
+    }
+
     public bool CheckRotation(Quaternion target)
     {
         return Mathf.Approximately(Mathf.Abs(Quaternion.Dot(transform.rotation, target)), 1f);
     }
     public void Hit()
     {
-        CurrentTarget.GetComponent<Live>().Health -= 25;
+        CurrentTarget.GetComponent<Live>().DecreaseHealth(25, Die);
     }
 
     public void CheckTargetDistance()
     {
+        if (IsDie) return;
+
         float distance = (CurrentTarget.transform.position - transform.position).magnitude;
         if (distance > (agent.stoppingDistance + 2f))
         {
@@ -151,19 +143,12 @@ public class Wolf : Animal
         Gizmos.DrawSphere(transform.position, 15);
     }
 
-    public void setAnim(string anim)
+
+    // Karþý tarafýn ölüm fonksiyonu
+    public void Die()
     {
-        for (int i = 0; i < Anims.Length; i++)
-        {
-            if (Anims[i] == anim)
-            {
-                animator.SetBool(Anims[i], true);
-            }
-            else
-            {
-                animator.SetBool(Anims[i], false);
-            }
-        }
+        CurrentTarget.GetComponent<Animator>().SetTrigger("Deneme");
+        setAnim("");
     }
 
     void Start()

@@ -19,7 +19,7 @@ public class WolfPatrollState : StateMachineBehaviour
 
         wolf.agent.speed = 1.5f;
         wolf.agent.angularSpeed = 175f;
-
+        wolf.agent.stoppingDistance = 0;
     }
 
 

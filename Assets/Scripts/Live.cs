@@ -1,18 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Live : MonoBehaviour
 {
+    public float Health;
+    public bool IsDie;
 
-    [SerializeField] private float m_Health;
-
-    public float Health
+    public void DecreaseHealth(float value, Action die)
     {
-        get { return m_Health; }
-        set
+        if (IsDie) return;
+
+        Health = Health - value;
+        Health = Mathf.Clamp(Health, 0, float.MaxValue);
+
+        if (Health == 0)
         {
-            m_Health = Mathf.Clamp(value, 0, float.MaxValue);
+            IsDie = true;
+            die.Invoke();
         }
     }
 }

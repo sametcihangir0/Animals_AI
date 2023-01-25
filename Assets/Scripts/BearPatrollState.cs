@@ -15,8 +15,9 @@ public class BearPatrollState : StateMachineBehaviour
 
         m_Point = m_Bear.GetPoint();
 
-        m_Bear.agent.speed = 1.5f;
+        m_Bear.agent.speed = 1f;
         m_Bear.agent.angularSpeed = 175f;
+        m_Bear.agent.stoppingDistance = 0;
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

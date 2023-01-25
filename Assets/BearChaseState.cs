@@ -12,12 +12,14 @@ public class BearChaseState : StateMachineBehaviour
             bear = animator.GetComponent<Bear>();
         }
 
-        bear.agent.speed = 2f;
+        bear.agent.speed = 3f;
         bear.agent.angularSpeed = 175f;
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        if (bear.IsDie) return;
+
         bear.agent.stoppingDistance = 2.25f;
         bear.agent.SetDestination(bear.CurrentTarget.position);
 

@@ -13,6 +13,7 @@ public class BearRoarState : StateMachineBehaviour
             bear = animator.GetComponent<Bear>();
         }
 
+        bear.Roar();
         bear.agent.isStopped = true;
     }
 
